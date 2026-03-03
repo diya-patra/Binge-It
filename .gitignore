@@ -1,5 +1,36 @@
+# ========================
+# IDE FILES (Eclipse)
+# ========================
+.project
+.classpath
+.settings/
+.metadata/
+
+# ========================
+# BUILD FILES
+# ========================
 bin/
 build/
-Servers/
-*.class
-.metadata/
+out/
+target/
+
+# ========================
+# LOG FILES
+# ========================
+*.log
+
+# ========================
+# OS FILES
+# ========================
+.DS_Store
+Thumbs.db
+
+# ========================
+# DATABASE CONFIG (DO NOT PUSH SECRETS)
+# ========================
+src/main/resources/app.properties
+
+# ========================
+# TEMP FILES
+# ========================
+*.tmp
