@@ -1,41 +1,41 @@
-package bingeit.auth;
+package bingetit.auth;
 
-import jakarta.servlet.ServletException;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * Servlet implementation class ResetPasswordServlet
- */
+import com.mongodb.client.*;
+import org.bson.Document;
+import static com.mongodb.client.model.Filters.eq;
+
+import bingetit.config.MongoUtil;
+
 @WebServlet("/ResetPasswordServlet")
 public class ResetPasswordServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public ResetPasswordServlet() {
-        super();
-        // TODO Auto-generated constructor stub
+
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
+
+        String username = req.getParameter("username");
+        String password = req.getParameter("password");
+        String confirm = req.getParameter("confirm");
+
+        if (!password.equals(confirm)) {
+            res.getWriter().println("Password mismatch");
+            return;
+        }
+
+        MongoCollection<Document> col =
+                MongoUtil.getDB().getCollection("users");
+
+        if (col.find(eq("username", username)).first() == null) {
+            res.getWriter().println("User not found");
+            return;
+        }
+
+        col.updateOne(eq("username", username),
+                new Document("$set", new Document("password", password)));
+
+        res.sendRedirect("auth/login.jsp");
     }
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
-
 }
