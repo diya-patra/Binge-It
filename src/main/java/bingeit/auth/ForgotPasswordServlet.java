@@ -1,41 +1,45 @@
 package bingeit.auth;
 
-import jakarta.servlet.ServletException;
+import bingeit.config.DBConnection;
+import bingeit.util.EmailUtil;
+
+import com.mongodb.client.MongoCollection;
+import org.bson.Document;
+
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * Servlet implementation class ForgotPasswordServlet
- */
+import static com.mongodb.client.model.Filters.eq;
+
 @WebServlet("/ForgotPasswordServlet")
 public class ForgotPasswordServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public ForgotPasswordServlet() {
-        super();
-        // TODO Auto-generated constructor stub
+
+    protected void doPost(HttpServletRequest req, HttpServletResponse res)
+            throws IOException, ServletException {
+
+        String email = req.getParameter("email");
+
+        MongoCollection<Document> col =
+                DBConnection.getDatabase().getCollection("users");
+
+        Document user = col.find(eq("email", email)).first();
+
+        if (user == null) {
+            req.setAttribute("error", "Email not found");
+            req.getRequestDispatcher("auth/forgot-password.jsp").forward(req, res);
+            return;
+        }
+
+        String username = user.getString("username");
+
+        // simple reset link (no token for now)
+        String resetLink = "http://localhost:8080/yourProjectName/auth/reset-password.jsp?user=" + username;
+
+        EmailUtil.sendResetEmail(email, resetLink);
+
+        req.setAttribute("msg", "Reset link sent to your email");
+        req.getRequestDispatcher("auth/forgot-password.jsp").forward(req, res);
     }
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
-
 }

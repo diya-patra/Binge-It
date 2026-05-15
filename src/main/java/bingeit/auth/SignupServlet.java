@@ -1,20 +1,23 @@
-package bingetit.auth;
+package bingeit.auth;
+
+import bingeit.config.DBConnection;
+import bingeit.util.PasswordUtil;
+
+import com.mongodb.client.MongoCollection;
+import org.bson.Document;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 
-import com.mongodb.client.*;
-import org.bson.Document;
 import static com.mongodb.client.model.Filters.eq;
-
-import bingetit.config.MongoUtil;
 
 @WebServlet("/SignupServlet")
 public class SignupServlet extends HttpServlet {
 
-    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse res)
+            throws IOException, ServletException {
 
         String name = req.getParameter("name");
         String username = req.getParameter("username");
@@ -24,23 +27,27 @@ public class SignupServlet extends HttpServlet {
         String confirm = req.getParameter("confirm");
 
         if (!password.equals(confirm)) {
-            res.getWriter().println("Password mismatch");
+            req.setAttribute("error", "Passwords do not match");
+            req.getRequestDispatcher("auth/signup.jsp").forward(req, res);
             return;
         }
 
         MongoCollection<Document> col =
-                MongoUtil.getDB().getCollection("users");
+                DBConnection.getDatabase().getCollection("users");
 
         if (col.find(eq("username", username)).first() != null) {
-            res.getWriter().println("Username exists");
+            req.setAttribute("error", "Username already exists");
+            req.getRequestDispatcher("auth/signup.jsp").forward(req, res);
             return;
         }
+
+        String hashedPassword = PasswordUtil.hash(password);
 
         Document user = new Document("name", name)
                 .append("username", username)
                 .append("email", email)
                 .append("mobile", mobile)
-                .append("password", password);
+                .append("password", hashedPassword);
 
         col.insertOne(user);
 

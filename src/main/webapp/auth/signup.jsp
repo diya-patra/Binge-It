@@ -9,12 +9,16 @@
 <div class="container">
     <h1>Sign Up</h1>
 
+    <% if (request.getAttribute("error") != null) { %>
+        <p style="color:red;"><%= request.getAttribute("error") %></p>
+    <% } %>
+
     <form action="<%= request.getContextPath() %>/SignupServlet" method="post">
 
-        <input type="text" name="name" placeholder="Name" required />
-        <input type="text" name="username" placeholder="Username" required />
-        <input type="email" name="email" placeholder="Email" required />
-        <input type="text" name="mobile" placeholder="Mobile No." required />
+        <input name="name" placeholder="Name" required />
+        <input name="username" placeholder="Username" required />
+        <input name="email" placeholder="Email" required />
+        <input name="mobile" placeholder="Mobile No." required />
 
         <input type="password" name="password" placeholder="Password" required />
         <input type="password" name="confirm" placeholder="Confirm Password" required />

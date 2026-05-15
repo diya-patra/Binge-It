@@ -9,11 +9,15 @@
 <div class="container">
     <h1>Login</h1>
 
+    <% if (request.getAttribute("error") != null) { %>
+        <p style="color:red;"><%= request.getAttribute("error") %></p>
+    <% } %>
+
     <form action="<%= request.getContextPath() %>/LoginServlet" method="post">
-        <input type="text" name="username" placeholder="Username" required />
+        <input name="username" placeholder="Username" required />
         <input type="password" name="password" placeholder="Password" required />
 
-        <a href="<%= request.getContextPath() %>/ForgotPasswordServlet">Forgot Password?</a>
+        <a href="forgot-password.jsp">Forgot Password?</a>
 
         <button type="submit">Submit</button>
     </form>

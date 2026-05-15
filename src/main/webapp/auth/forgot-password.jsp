@@ -9,12 +9,22 @@
 <div class="container">
     <h1>Forgot Password</h1>
 
-    <p>Click below to reset your password</p>
+    <% if (request.getAttribute("msg") != null) { %>
+        <p style="color:green;"><%= request.getAttribute("msg") %></p>
+    <% } %>
 
-    <a href="reset-password.jsp">
-        <button>Go to Reset</button>
-    </a>
+    <% if (request.getAttribute("error") != null) { %>
+        <p style="color:red;"><%= request.getAttribute("error") %></p>
+    <% } %>
 
+    <form action="<%= request.getContextPath() %>/ForgotPasswordServlet" method="post">
+
+        <input type="email" name="email" placeholder="Enter your Email" required />
+
+        <button type="submit">Send Reset Link</button>
+    </form>
+
+    <p><a href="login.jsp">Back to Login</a></p>
 </div>
 
 </body>
