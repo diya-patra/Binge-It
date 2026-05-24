@@ -1,7 +1,7 @@
 package bingeit.auth;
 
 import bingeit.config.DBConnection;
-import bingeit.util.EmailUtil;
+import bingeit.util.PasswordUtil;
 
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
@@ -9,6 +9,7 @@ import org.bson.Document;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
+
 import java.io.IOException;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -16,30 +17,59 @@ import static com.mongodb.client.model.Filters.eq;
 @WebServlet("/ForgotPasswordServlet")
 public class ForgotPasswordServlet extends HttpServlet {
 
-    protected void doPost(HttpServletRequest req, HttpServletResponse res)
+    protected void doPost(HttpServletRequest req,
+                          HttpServletResponse res)
             throws IOException, ServletException {
 
-        String email = req.getParameter("email");
+        String username =
+                req.getParameter("username");
 
-        MongoCollection<Document> col =
-                DBConnection.getDatabase().getCollection("users");
+        String password =
+                req.getParameter("password");
 
-        Document user = col.find(eq("email", email)).first();
+        String confirm =
+                req.getParameter("confirm");
 
-        if (user == null) {
-            req.setAttribute("error", "Email not found");
-            req.getRequestDispatcher("auth/forgot-password.jsp").forward(req, res);
+        if(!password.equals(confirm)) {
+
+            req.setAttribute("error",
+                    "Passwords do not match");
+
+            req.getRequestDispatcher("auth/forgot-password.jsp")
+                    .forward(req, res);
+
             return;
         }
 
-        String username = user.getString("username");
+        MongoCollection<Document> col =
+                DBConnection.getDatabase()
+                        .getCollection("users");
 
-        // simple reset link (no token for now)
-        String resetLink = "http://localhost:8080/yourProjectName/auth/reset-password.jsp?user=" + username;
+        Document user =
+                col.find(eq("username", username))
+                        .first();
 
-        EmailUtil.sendResetEmail(email, resetLink);
+        if(user == null) {
 
-        req.setAttribute("msg", "Reset link sent to your email");
-        req.getRequestDispatcher("auth/forgot-password.jsp").forward(req, res);
+            req.setAttribute("error",
+                    "User not found");
+
+            req.getRequestDispatcher("auth/forgot-password.jsp")
+                    .forward(req, res);
+
+            return;
+        }
+
+        String hashed =
+                PasswordUtil.hash(password);
+
+        col.updateOne(
+                eq("username", username),
+
+                new Document("$set",
+                        new Document("password", hashed))
+        );
+
+        res.sendRedirect("auth/login.jsp");
     }
 }
