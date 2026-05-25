@@ -1,4 +1,4 @@
-package bingeit.util;
+package bingeit.util; 
 
 import bingeit.config.AppConfig;
 import jakarta.mail.*;
@@ -6,7 +6,6 @@ import jakarta.mail.internet.*;
 import java.util.Properties;
 
 public class EmailUtil {
-
     public static void sendResetEmail(String toEmail, String resetLink) {
 
         String host = AppConfig.get("mail.host");

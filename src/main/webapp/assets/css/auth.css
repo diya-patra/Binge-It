@@ -1,1 +1,55 @@
 @charset "UTF-8";
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #9b3b3b;
+}
+
+.container {
+    width: 350px;
+    margin: 80px auto;
+    padding: 30px;
+    background-color: #c98f8f;
+    border-radius: 20px;
+    text-align: center;
+}
+
+h1 {
+    color: white;
+    margin-bottom: 20px;
+}
+
+input {
+    width: 85%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 20px;
+    border: none;
+    outline: none;
+}
+
+button {
+    padding: 10px 25px;
+    margin-top: 10px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    background-color: white;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: #eee;
+}
+
+a {
+    display: block;
+    margin-top: 10px;
+    color: blue;
+    text-decoration: none;
+}
+
+p {
+    margin-top: 15px;
+}

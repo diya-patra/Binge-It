@@ -5,7 +5,6 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 
 public class DBConnection {
-
     private static MongoClient mongoClient = null;
 
     public static MongoDatabase getDatabase() {
