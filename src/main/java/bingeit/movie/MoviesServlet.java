@@ -4,7 +4,6 @@ import bingeit.config.DBConnection;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-
 import org.bson.Document;
 
 import jakarta.servlet.ServletException;
@@ -48,7 +47,6 @@ public class MoviesServlet extends HttpServlet {
 
         // MOVIES COLLECTION
         MongoCollection<Document> moviesCollection = db.getCollection("movies");
-        System.out.println("DATABASE NAME CONNECTED");
 
         System.out.println("TOTAL MOVIES IN COLLECTION: "
                 + moviesCollection.countDocuments());
@@ -101,10 +99,10 @@ public class MoviesServlet extends HttpServlet {
 
             movieList = moviesCollection.find()
                     .into(new ArrayList<>());
-            
+
             System.out.println("MOVIE LIST SIZE: " + movieList.size());
 
-            for(Document d : movieList){
+            for (Document d : movieList) {
                 System.out.println(d.toJson());
             }
         }

@@ -21,8 +21,6 @@
     padding: 180px 30px 60px;
 }
 
-
-
 .page-header h1 {
     font-family: 'Playfair Display', serif;
 
@@ -316,7 +314,6 @@
     overflow: hidden;
 }
 
-
 .movie-hero-bg {
     position: absolute;
     inset: 0;
@@ -329,7 +326,6 @@
 
     filter: brightness(0.82);
 }
-
 
 .movie-hero-overlay {
     position: absolute;

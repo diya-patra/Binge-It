@@ -4,13 +4,22 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>BingeIt - Movies</title>
 
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/global.css">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/movie.css">
+    <link rel="stylesheet"
+          href="<%= request.getContextPath() %>/assets/css/global.css">
+
+    <link rel="stylesheet"
+          href="<%= request.getContextPath() %>/assets/css/movie.css">
+
 </head>
 
 <body>
@@ -19,15 +28,25 @@
 
 <!-- PAGE HEADER -->
 <section class="page-header">
+
     <h1>All Movies</h1>
-    <p>Explore and book your favourite shows</p>
+
+    <p>
+        Explore and book your favourite shows
+    </p>
+
 </section>
 
 <!-- FILTER BAR -->
 <%
-    String searchQuery = (String) request.getAttribute("searchQuery");
-    String selectedGenre = (String) request.getAttribute("selectedGenre");
-    List<String> genres = (List<String>) request.getAttribute("genres");
+    String searchQuery =
+        (String) request.getAttribute("searchQuery");
+
+    String selectedGenre =
+        (String) request.getAttribute("selectedGenre");
+
+    List<String> genres =
+        (List<String>) request.getAttribute("genres");
 
     if (searchQuery == null)
         searchQuery = "";
@@ -37,7 +56,9 @@
 %>
 
 <div class="filter-bar">
-    <form method="get" action="<%= request.getContextPath() %>/movies">
+
+    <form method="get"
+          action="<%= request.getContextPath() %>/movies">
 
         <input
             type="text"
@@ -46,18 +67,25 @@
             placeholder="Search movies..."
             value="<%= searchQuery %>">
 
-        <select name="genre" class="genre-select">
+        <select name="genre"
+                class="genre-select">
 
             <%
                 if (genres != null) {
 
                     for (String g : genres) {
 
-                        String sel = g.equals(selectedGenre) ? "selected" : "";
+                        String sel =
+                            g.equals(selectedGenre)
+                            ? "selected"
+                            : "";
             %>
 
-            <option value="<%= g %>" <%= sel %>>
+            <option value="<%= g %>"
+                    <%= sel %>>
+
                 <%= g %>
+
             </option>
 
             <%
@@ -67,17 +95,24 @@
 
         </select>
 
-        <button type="submit" class="search-btn">
+        <button type="submit"
+                class="search-btn">
+
             Search
+
         </button>
 
         <%
-            if (!searchQuery.isEmpty() ||
-               (selectedGenre != null && !selectedGenre.equals("All"))) {
+            if (!searchQuery.isEmpty()
+                || (selectedGenre != null
+                && !selectedGenre.equals("All"))) {
         %>
 
-        <a href="<%= request.getContextPath() %>/movies" class="clear-btn">
+        <a href="<%= request.getContextPath() %>/movies"
+           class="clear-btn">
+
             Clear
+
         </a>
 
         <%
@@ -85,6 +120,7 @@
         %>
 
     </form>
+
 </div>
 
 <!-- RESULTS INFO -->
@@ -92,35 +128,42 @@
     List<Document> movieList =
         (List<Document>) request.getAttribute("movieList");
 
-    int count = (movieList != null) ? movieList.size() : 0;
+    int count =
+        (movieList != null)
+        ? movieList.size()
+        : 0;
 %>
 
 <div class="results-info">
 
     <%
-        if (!searchQuery.isEmpty() ||
-           (selectedGenre != null && !selectedGenre.equals("All"))) {
+        if (!searchQuery.isEmpty()
+           || (selectedGenre != null
+           && !selectedGenre.equals("All"))) {
     %>
 
-        Showing <strong><%= count %></strong>
+        Showing
+        <strong><%= count %></strong>
         result<%= count != 1 ? "s" : "" %>
 
         <%
             if (!searchQuery.isEmpty()) {
         %>
 
-            for "<strong><%= searchQuery %></strong>"
+            for
+            "<strong><%= searchQuery %></strong>"
 
         <%
             }
         %>
 
         <%
-            if (selectedGenre != null &&
-                !selectedGenre.equals("All")) {
+            if (selectedGenre != null
+                && !selectedGenre.equals("All")) {
         %>
 
-            in <strong><%= selectedGenre %></strong>
+            in
+            <strong><%= selectedGenre %></strong>
 
         <%
             }
@@ -131,7 +174,8 @@
         else {
     %>
 
-        Showing <strong><%= count %></strong>
+        Showing
+        <strong><%= count %></strong>
         movie<%= count != 1 ? "s" : "" %>
 
     <%
@@ -146,7 +190,8 @@
     <div class="movie-grid">
 
         <%
-            if (movieList != null && !movieList.isEmpty()) {
+            if (movieList != null
+                && !movieList.isEmpty()) {
 
                 for (Document movie : movieList) {
 
@@ -170,32 +215,48 @@
 
                     Integer dur = null;
 
-                    Object durObj = movie.get("duration");
+                    Object durObj =
+                        movie.get("duration");
 
                     if (durObj instanceof Integer) {
+
                         dur = (Integer) durObj;
+
                     }
                     else if (durObj instanceof Double) {
-                        dur = ((Double) durObj).intValue();
+
+                        dur =
+                            ((Double) durObj).intValue();
+
                     }
                     else if (durObj instanceof Long) {
-                        dur = ((Long) durObj).intValue();
+
+                        dur =
+                            ((Long) durObj).intValue();
+
                     }
 
                     Double rating = null;
 
-                    Object ratingObj = movie.get("rating");
+                    Object ratingObj =
+                        movie.get("rating");
 
                     if (ratingObj instanceof Integer) {
+
                         rating =
                             ((Integer) ratingObj).doubleValue();
+
                     }
                     else if (ratingObj instanceof Double) {
+
                         rating = (Double) ratingObj;
+
                     }
                     else if (ratingObj instanceof Long) {
+
                         rating =
                             ((Long) ratingObj).doubleValue();
+
                     }
 
                     int ratingStars =
@@ -207,7 +268,6 @@
                         ratingStars = 5;
         %>
 
-        <!-- MOVIE CARD -->
         <div class="movie-card"
              onclick="window.location='<%= request.getContextPath() %>/movie-details?id=<%= id %>'">
 
@@ -282,7 +342,6 @@
             else {
         %>
 
-        <!-- EMPTY STATE -->
         <div class="empty-state">
 
             <p>

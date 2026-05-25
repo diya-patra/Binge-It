@@ -18,11 +18,11 @@
         (movie != null && movie.getString("poster_url") != null)
         ? movie.getString("poster_url")
         : "";
-    
+
     String bannerUrl =
-    	    (movie != null && movie.getString("banner_url") != null)
-    	    ? movie.getString("banner_url")
-    	    : posterUrl;
+        (movie != null && movie.getString("banner_url") != null)
+        ? movie.getString("banner_url")
+        : posterUrl;
 
     String genre =
         (movie != null && movie.getString("genre") != null)
@@ -38,10 +38,6 @@
         (movie != null)
         ? movie.getObjectId("_id").toString()
         : "";
-
-
-
-    /* ---------- SAFE RATING ---------- */
 
     Double ratingVal = 0.0;
 
@@ -68,10 +64,6 @@
         }
     }
 
-
-
-    /* ---------- SAFE DURATION ---------- */
-
     Integer duration = 0;
 
     if (movie != null) {
@@ -96,10 +88,6 @@
 
         }
     }
-
-
-
-    /* ---------- STAR CALCULATION ---------- */
 
     int filledStars =
         (int) Math.round(ratingVal / 2.0);
@@ -131,27 +119,22 @@
     <link rel="stylesheet"
           href="<%= request.getContextPath() %>/assets/css/movie.css">
 
-    <!-- HERO BG IMAGE -->
-	<style>
-	
-	    .movie-hero-bg {
-	
-	        background-image:
-	            url('<%= request.getContextPath() %>/<%= bannerUrl %>');
-	
-	    }
-	
-	</style>
+    <style>
+
+        .movie-hero-bg {
+
+            background-image:
+                url('<%= request.getContextPath() %>/<%= bannerUrl %>');
+
+        }
+
+    </style>
 
 </head>
 
 <body>
 
 <jsp:include page="../header.jsp" />
-
-
-
-<!-- MOVIE HERO -->
 
 <section class="movie-hero">
 
@@ -161,16 +144,10 @@
 
 </section>
 
-
-
-<!-- DETAILS -->
 <section class="details-section">
 
     <div class="details-card">
 
-
-
-        <!-- LEFT -->
         <div class="left-col">
 
             <img
@@ -218,9 +195,6 @@
 
         </div>
 
-
-
-        <!-- RIGHT -->
         <div class="right-col">
 
             <div class="description-box">
@@ -234,8 +208,6 @@
                 </p>
 
             </div>
-
-
 
             <% if (!genre.isEmpty()
                    || duration > 0
@@ -251,8 +223,6 @@
 
                 <% } %>
 
-
-
                 <% if (duration > 0) { %>
 
                     <span class="meta-tag">
@@ -260,8 +230,6 @@
                     </span>
 
                 <% } %>
-
-
 
                 <% if (!language.isEmpty()) { %>
 
@@ -281,9 +249,6 @@
 
 </section>
 
-
-
-<!-- BOOK NOW -->
 <section class="book-section">
 
     <a
@@ -296,8 +261,6 @@
     </a>
 
 </section>
-
-
 
 <jsp:include page="../footer.jsp" />
 
