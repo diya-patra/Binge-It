@@ -1,41 +1,101 @@
 package bingeit.movie;
 
+import bingeit.config.DBConnection;
+
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+
+import org.bson.Document;
+import org.bson.types.ObjectId;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
-/**
- * Servlet implementation class MovieDetailsServlet
- */
-@WebServlet("/MovieDetailsServlet")
+import static com.mongodb.client.model.Filters.eq;
+
+@WebServlet("/movie-details")
 public class MovieDetailsServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public MovieDetailsServlet() {
-        super();
-        // TODO Auto-generated constructor stub
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        System.out.println("MOVIE DETAILS SERVLET RUNNING");
+
+        // GET MOVIE ID
+        String movieId = request.getParameter("id");
+
+        // CHECK MOVIE ID
+        if (movieId == null || movieId.trim().isEmpty()) {
+
+            System.out.println("MOVIE ID MISSING");
+
+            response.sendRedirect(request.getContextPath() + "/movies");
+
+            return;
+        }
+
+        // DATABASE CONNECTION
+        MongoDatabase db = DBConnection.getDatabase();
+
+        // CHECK DATABASE
+        if (db == null) {
+
+            System.out.println("DATABASE CONNECTION FAILED");
+
+            response.setContentType("text/html");
+
+            response.getWriter().println("<h1>Database connection failed</h1>");
+
+            return;
+        }
+
+        System.out.println("DATABASE CONNECTED");
+
+        // MOVIES COLLECTION
+        MongoCollection<Document> moviesCollection = db.getCollection("movies");
+
+        Document movie = null;
+
+        try {
+
+            // CONVERT STRING TO OBJECT ID
+            ObjectId oid = new ObjectId(movieId.trim());
+
+            // FIND MOVIE
+            movie = moviesCollection.find(eq("_id", oid)).first();
+
+        } catch (IllegalArgumentException e) {
+
+            System.out.println("INVALID OBJECT ID");
+
+            response.sendRedirect(request.getContextPath() + "/movies");
+
+            return;
+        }
+
+        // MOVIE NOT FOUND
+        if (movie == null) {
+
+            System.out.println("MOVIE NOT FOUND");
+
+            response.sendRedirect(request.getContextPath() + "/movies");
+
+            return;
+        }
+
+        System.out.println("MOVIE FOUND: " + movie.getString("title"));
+
+        // SEND DATA TO JSP
+        request.setAttribute("movie", movie);
+
+        // FORWARD TO JSP
+        request.getRequestDispatcher("/movie/movie-details.jsp")
+                .forward(request, response);
     }
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
-
 }

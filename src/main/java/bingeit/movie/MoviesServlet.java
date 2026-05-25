@@ -1,41 +1,138 @@
 package bingeit.movie;
 
+import bingeit.config.DBConnection;
+
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+
+import org.bson.Document;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-/**
- * Servlet implementation class MoviesServlet
- */
-@WebServlet("/MoviesServlet")
+import static com.mongodb.client.model.Filters.*;
+
+@WebServlet("/movies")
 public class MoviesServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public MoviesServlet() {
-        super();
-        // TODO Auto-generated constructor stub
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        System.out.println("MOVIES SERVLET RUNNING");
+
+        // DATABASE CONNECTION
+        MongoDatabase db = DBConnection.getDatabase();
+
+        // CHECK DATABASE
+        if (db == null) {
+
+            System.out.println("DATABASE CONNECTION FAILED");
+
+            response.setContentType("text/html");
+
+            response.getWriter().println("<h1>Database connection failed</h1>");
+
+            return;
+        }
+
+        System.out.println("DATABASE CONNECTED");
+
+        // MOVIES COLLECTION
+        MongoCollection<Document> moviesCollection = db.getCollection("movies");
+        System.out.println("DATABASE NAME CONNECTED");
+
+        System.out.println("TOTAL MOVIES IN COLLECTION: "
+                + moviesCollection.countDocuments());
+
+        // PARAMETERS
+        String searchQuery = request.getParameter("search");
+        String genreFilter = request.getParameter("genre");
+
+        List<Document> movieList;
+
+        // BOTH SEARCH + GENRE
+        if (searchQuery != null
+                && !searchQuery.trim().isEmpty()
+                && genreFilter != null
+                && !genreFilter.trim().isEmpty()
+                && !genreFilter.equals("All")) {
+
+            movieList = moviesCollection.find(
+                    and(
+                            regex("title", searchQuery.trim(), "i"),
+                            eq("genre", genreFilter)
+                    )
+            ).into(new ArrayList<>());
+
+        }
+
+        // ONLY SEARCH
+        else if (searchQuery != null
+                && !searchQuery.trim().isEmpty()) {
+
+            movieList = moviesCollection.find(
+                    regex("title", searchQuery.trim(), "i")
+            ).into(new ArrayList<>());
+
+        }
+
+        // ONLY GENRE
+        else if (genreFilter != null
+                && !genreFilter.trim().isEmpty()
+                && !genreFilter.equals("All")) {
+
+            movieList = moviesCollection.find(
+                    eq("genre", genreFilter)
+            ).into(new ArrayList<>());
+
+        }
+
+        // ALL MOVIES
+        else {
+
+            movieList = moviesCollection.find()
+                    .into(new ArrayList<>());
+            
+            System.out.println("MOVIE LIST SIZE: " + movieList.size());
+
+            for(Document d : movieList){
+                System.out.println(d.toJson());
+            }
+        }
+
+        // DEBUG
+        System.out.println("Movies Found: " + movieList.size());
+
+        // GENRES
+        List<String> genres = Arrays.asList(
+                "All",
+                "Action",
+                "Romance",
+                "Horror",
+                "Sci-Fi",
+                "Comedy",
+                "Drama",
+                "Thriller",
+                "Adventure"
+        );
+
+        // SEND DATA TO JSP
+        request.setAttribute("movieList", movieList);
+        request.setAttribute("genres", genres);
+        request.setAttribute("searchQuery", searchQuery);
+        request.setAttribute("selectedGenre", genreFilter);
+
+        // FORWARD TO JSP
+        request.getRequestDispatcher("/movie/movies.jsp")
+                .forward(request, response);
     }
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
-
 }
