@@ -1,21 +1,18 @@
 package bingeit.home;
 
 import bingeit.config.DBConnection;
-
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import static com.mongodb.client.model.Filters.eq;
 
 @WebServlet("/home")
@@ -25,30 +22,56 @@ public class HomeServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // SESSION CHECK
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+
+        System.out.println("HOME SERVLET RUNNING");
+
+        // DATABASE CONNECTION
         MongoDatabase db = DBConnection.getDatabase();
+
+        if (db == null) {
+            System.out.println("DATABASE CONNECTION FAILED");
+            response.setContentType("text/html");
+            response.getWriter().println("<h1>Database connection failed</h1>");
+            return;
+        }
+
+        System.out.println("DATABASE CONNECTED");
+
+        // GET MOVIES COLLECTION
         MongoCollection<Document> movies = db.getCollection("movies");
 
-        // Fetch recommended movies (first 4, or add your own logic e.g. by rating)
+        // RECOMMENDED MOVIES
         List<Document> recommendedMovies = movies.find()
                 .sort(new Document("rating", -1))
                 .limit(4)
                 .into(new ArrayList<>());
 
-        // Fetch romantic genre movies
+        // ROMANTIC MOVIES
         List<Document> romanticMovies = movies.find(eq("genre", "Romance"))
                 .limit(4)
                 .into(new ArrayList<>());
 
-        // Fetch action genre movies (for a third row if needed)
+        // ACTION MOVIES
         List<Document> actionMovies = movies.find(eq("genre", "Action"))
                 .limit(4)
                 .into(new ArrayList<>());
 
-        request.setAttribute("recommendedMovies", recommendedMovies);
-        request.setAttribute("romanticMovies", romanticMovies);
-        request.setAttribute("actionMovies", actionMovies);
+        System.out.println("Recommended Movies: " + recommendedMovies.size());
+        System.out.println("Romantic Movies: "    + romanticMovies.size());
+        System.out.println("Action Movies: "      + actionMovies.size());
 
-        request.getRequestDispatcher("/WEB-INF/home/home.jsp")
-                .forward(request, response);
+        // SEND DATA TO JSP
+        request.setAttribute("recommendedMovies", recommendedMovies);
+        request.setAttribute("romanticMovies",    romanticMovies);
+        request.setAttribute("actionMovies",      actionMovies);
+        request.setAttribute("currentPage",       "home");
+
+        request.getRequestDispatcher("/home/home.jsp").forward(request, response);
     }
 }

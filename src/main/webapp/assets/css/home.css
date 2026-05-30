@@ -3,22 +3,34 @@
    Used by: home.jsp
    ================================================ */
 
+
 /* ===== HERO BANNER ===== */
 .hero-banner {
     width: 100%;
-    height: 260px;
-    background: linear-gradient(135deg, #1a0000 0%, #5c0a0a 40%, #8b1a1a 70%, #3d0000 100%);
+    height: 320px;
+
+    background: linear-gradient(
+        135deg,
+        #1a0000 0%,
+        #5c0a0a 40%,
+        #8b1a1a 70%,
+        #3d0000 100%
+    );
+
     position: relative;
     overflow: hidden;
+
     display: flex;
-    align-items: center;
+    align-items: flex-start;
 }
 
-/* Cinema seat diagonal texture overlay */
+
+/* ===== CINEMA TEXTURE OVERLAY ===== */
 .hero-banner::before {
     content: '';
     position: absolute;
     inset: 0;
+
     background: repeating-linear-gradient(
         -30deg,
         rgba(100, 10, 10, 0.2) 0px,
@@ -28,14 +40,21 @@
     );
 }
 
+
+/* ===== HERO CONTENT ===== */
 .hero-overlay {
     display: flex;
     align-items: center;
+
     gap: 28px;
-    padding: 0 40px;
+
+    /* TOP RIGHT BOTTOM LEFT */
+    padding: 100px 40px 0 40px;
+
     position: relative;
     z-index: 2;
 }
+
 
 /* ===== DISCOUNT BADGE ===== */
 .discount-badge {
@@ -44,74 +63,113 @@
     align-items: center;
 }
 
+
+/* ===== STARS ===== */
 .badge-stars {
     display: flex;
     gap: 2px;
+
     margin-bottom: -12px;
+
     position: relative;
     z-index: 2;
 }
 
 .badge-stars .s {
     color: #f5c518;
+
     text-shadow: 0 0 8px rgba(245, 197, 24, 0.7);
 }
 
-.s.big  { font-size: 30px; }
-.s.med  { font-size: 20px; align-self: flex-end; }
-.s.sml  { font-size: 14px; }
+.s.big {
+    font-size: 30px;
+}
 
+.s.med {
+    font-size: 20px;
+    align-self: flex-end;
+}
+
+.s.sml {
+    font-size: 14px;
+}
+
+
+/* ===== BADGE CIRCLE ===== */
 .badge-circle {
     width: 104px;
     height: 104px;
+
     background: #c0392b;
+
     border-radius: 50%;
+
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+
     border: 4px solid #e74c3c;
+
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.55);
+
     position: relative;
 }
 
 .badge-circle::before {
     content: '';
     position: absolute;
+
     inset: -7px;
+
     border-radius: 50%;
+
     border: 6px dashed rgba(255, 255, 255, 0.28);
 }
 
+
+/* ===== BADGE TEXT ===== */
 .badge-pct {
     font-family: 'Playfair Display', serif;
+
     font-size: 24px;
     font-weight: 700;
+
     color: #fff;
+
     line-height: 1;
 }
 
 .badge-off {
     font-size: 13px;
     font-weight: 700;
+
     color: #fff;
+
     letter-spacing: 3px;
 }
+
 
 /* ===== HERO TEXT ===== */
 .hero-title {
     font-family: 'Playfair Display', serif;
+
     font-size: 54px;
     font-weight: 700;
+
     color: #fff;
+
     line-height: 1.1;
 }
 
 .hero-subtitle {
     font-size: 18px;
+
     color: #f0d0d0;
+
     margin-top: 8px;
 }
+
 
 /* ===== MOVIE SECTIONS ===== */
 .movies-section {
@@ -122,18 +180,21 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     margin-bottom: 16px;
 }
 
 .section-title {
     font-size: 20px;
     font-weight: 700;
+
     color: #1a1a1a;
 }
 
 .see-all {
     font-size: 14px;
     color: #1a1a1a;
+
     text-decoration: none;
     font-weight: 500;
 }
@@ -142,36 +203,56 @@
     text-decoration: underline;
 }
 
+
 /* ===== MOVIE GRID ===== */
 .movie-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
+
     gap: 14px;
 }
 
+
+/* ===== MOVIE CARD ===== */
 .movie-card {
     border-radius: 14px;
     overflow: hidden;
+
     cursor: pointer;
+
     aspect-ratio: 2 / 3;
+
     background: #ddd;
+
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .movie-card:hover {
     transform: translateY(-5px);
+
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
 }
 
 .movie-card img {
     width: 100%;
     height: 100%;
+
     object-fit: cover;
+
     display: block;
 }
 
+
+/* ===== EMPTY MOVIES ===== */
 .no-movies {
     color: #888;
     font-size: 14px;
+
     padding: 20px 0;
+}
+
+.movie-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 14px !important;
 }

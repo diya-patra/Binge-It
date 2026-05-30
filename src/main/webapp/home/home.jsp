@@ -11,18 +11,9 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/home.css">
 </head>
 <body>
+<jsp:include page="../header.jsp" />
 
-<!-- NAVBAR -->
-<header class="navbar">
-    <div class="logo-circle"></div>
-    <nav class="navbar-links">
-        <a href="<%= request.getContextPath() %>/home"        class="nav-link active">Home</a>
-        <a href="<%= request.getContextPath() %>/movies"      class="nav-link">Movies</a>
-        <a href="<%= request.getContextPath() %>/my-bookings" class="nav-link">Bookings</a>
-        <a href="<%= request.getContextPath() %>/profile"     class="nav-link">Profile</a>
-        <a href="<%= request.getContextPath() %>/support"     class="nav-link">Support</a>
-    </nav>
-</header>
+<main>
 
 <!-- HERO BANNER -->
 <section class="hero-banner">
@@ -53,6 +44,7 @@
     <div class="section-header">
         <h2 class="section-title">Recommended Movies</h2>
         <a href="<%= request.getContextPath() %>/movies" class="see-all">See All &gt;</a>
+        
     </div>
     <div class="movie-grid">
         <% if (recommendedMovies != null && !recommendedMovies.isEmpty()) {
@@ -63,7 +55,10 @@
         %>
         <div class="movie-card"
              onclick="window.location='<%= request.getContextPath() %>/movie-details?id=<%= movieId %>'">
+         
+           
             <img src="<%= request.getContextPath() %>/<%= poster %>" alt="<%= title %>">
+            
         </div>
         <%  }
         } else { %>
@@ -89,7 +84,8 @@
         %>
         <div class="movie-card"
              onclick="window.location='<%= request.getContextPath() %>/movie-details?id=<%= movieId %>'">
-            <img src="<%= request.getContextPath() %>/<%= poster %>" alt="<%= title %>">
+           	
+           	 <img src="<%= request.getContextPath() %>/<%= poster %>" alt="<%= title %>">
         </div>
         <% } %>
     </div>
@@ -113,6 +109,7 @@
         %>
         <div class="movie-card"
              onclick="window.location='<%= request.getContextPath() %>/movie-details?id=<%= movieId %>'">
+           
             <img src="<%= request.getContextPath() %>/<%= poster %>" alt="<%= title %>">
         </div>
         <% } %>
@@ -120,16 +117,9 @@
 </section>
 <% } %>
 
-<!-- FOOTER -->
-<footer class="footer">
-    <div class="footer-logo"></div>
-    <div class="footer-links">
-        <a href="#" class="footer-link">Facebook</a>
-        <a href="#" class="footer-link">Instagram</a>
-        <a href="#" class="footer-link">Twitter</a>
-    </div>
-    <p class="footer-copy">&copy; Bing It!. All Rights Reserved.</p>
-</footer>
+</main>
+
+<jsp:include page="../footer.jsp" />
 
 </body>
 </html>

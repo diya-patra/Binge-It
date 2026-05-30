@@ -1,55 +1,26 @@
-@charset "UTF-8";
-body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background-color: #9b3b3b;
+/* auth.css — only what global.css doesn't already cover */
+
+.bi-auth-card .bi-btn--large {
+    margin-top: 0.5rem;
 }
 
-.container {
-    width: 350px;
-    margin: 80px auto;
-    padding: 30px;
-    background-color: #c98f8f;
-    border-radius: 20px;
+.bi-auth-divider {
     text-align: center;
+    font-size: 0.85rem;
+    color: var(--clr-text-muted);
+    margin: 1rem 0;
+    position: relative;
 }
 
-h1 {
-    color: white;
-    margin-bottom: 20px;
+.bi-auth-divider::before,
+.bi-auth-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 42%;
+    height: 1px;
+    background: var(--clr-border-light);
 }
 
-input {
-    width: 85%;
-    padding: 10px;
-    margin: 8px 0;
-    border-radius: 20px;
-    border: none;
-    outline: none;
-}
-
-button {
-    padding: 10px 25px;
-    margin-top: 10px;
-    border-radius: 20px;
-    border: none;
-    cursor: pointer;
-    background-color: white;
-    font-weight: bold;
-}
-
-button:hover {
-    background-color: #eee;
-}
-
-a {
-    display: block;
-    margin-top: 10px;
-    color: blue;
-    text-decoration: none;
-}
-
-p {
-    margin-top: 15px;
-}
+.bi-auth-divider::before { left: 0; }
+.bi-auth-divider::after  { right: 0; }

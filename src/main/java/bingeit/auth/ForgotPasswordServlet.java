@@ -1,75 +1,60 @@
 package bingeit.auth;
 
 import bingeit.config.DBConnection;
-import bingeit.util.PasswordUtil;
-
+import bingeit.util.EmailUtil;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
-
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
-
 import java.io.IOException;
-
+import java.util.Date;
+import java.util.UUID;
 import static com.mongodb.client.model.Filters.eq;
 
-@WebServlet("/ForgotPasswordServlet")
+@WebServlet("/forgot-password")
 public class ForgotPasswordServlet extends HttpServlet {
 
-    protected void doPost(HttpServletRequest req,
-                          HttpServletResponse res)
+    protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
+        req.getRequestDispatcher("/auth/forgot-password.jsp").forward(req, res);
+    }
 
-        String username =
-                req.getParameter("username");
-
-        String password =
-                req.getParameter("password");
-
-        String confirm =
-                req.getParameter("confirm");
-
-        if(!password.equals(confirm)) {
-
-            req.setAttribute("error",
-                    "Passwords do not match");
-
-            req.getRequestDispatcher("auth/forgot-password.jsp")
-                    .forward(req, res);
-
-            return;
-        }
+    protected void doPost(HttpServletRequest req, HttpServletResponse res)
+            throws IOException, ServletException {
+        String email = req.getParameter("email");
 
         MongoCollection<Document> col =
-                DBConnection.getDatabase()
-                        .getCollection("users");
+                DBConnection.getDatabase().getCollection("users");
 
-        Document user =
-                col.find(eq("username", username))
-                        .first();
+        Document user = col.find(eq("email", email)).first();
 
-        if(user == null) {
-
-            req.setAttribute("error",
-                    "User not found");
-
-            req.getRequestDispatcher("auth/forgot-password.jsp")
-                    .forward(req, res);
-
+        if (user == null) {
+            // Don't reveal whether email exists — show same success message
+            req.setAttribute("success",
+                "If that email is registered, a reset link has been sent.");
+            req.getRequestDispatcher("/auth/forgot-password.jsp").forward(req, res);
             return;
         }
 
-        String hashed =
-                PasswordUtil.hash(password);
+        // Generate token
+        String token = UUID.randomUUID().toString();
+        Date expiry = new Date(System.currentTimeMillis() + 30 * 60 * 1000); // 30 min
 
-        col.updateOne(
-                eq("username", username),
+        col.updateOne(eq("email", email),
+                new Document("$set", new Document()
+                        .append("reset_token", token)
+                        .append("reset_token_expiry", expiry)));
 
-                new Document("$set",
-                        new Document("password", hashed))
-        );
+        String resetLink = req.getScheme() + "://"
+                + req.getServerName() + ":" + req.getServerPort()
+                + req.getContextPath()
+                + "/reset-password?token=" + token;
 
-        res.sendRedirect("auth/login.jsp");
+        EmailUtil.sendResetEmail(email, resetLink);
+
+        req.setAttribute("success",
+                "If that email is registered, a reset link has been sent.");
+        req.getRequestDispatcher("/auth/forgot-password.jsp").forward(req, res);
     }
 }

@@ -1,48 +1,53 @@
-<%@ page language="java" %>
-
-<html>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Reset Password</title>
-
-    <link rel="stylesheet"
-          href="<%= request.getContextPath() %>/assets/css/auth.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password | BingeIt</title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/global.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/auth.css">
 </head>
-
 <body>
+<jsp:include page="../header.jsp" />
 
-<div class="container">
+<main class="bi-auth-page">
+    <div class="bi-auth-card">
+        <h1 class="bi-auth-card__title">Reset Password</h1>
+        <p class="bi-auth-card__subtitle">Enter your new password below</p>
 
-    <h1>Reset Password</h1>
+        <% if (request.getAttribute("error") != null) { %>
+            <div class="bi-alert bi-alert--error">
+                <%= request.getAttribute("error") %>
+            </div>
+        <% } %>
 
-    <% if(request.getAttribute("error") != null) { %>
-        <p style="color:red;">
-            <%= request.getAttribute("error") %>
-        </p>
-    <% } %>
+        <form action="<%= request.getContextPath() %>/reset-password" method="post">
+            <!-- token passed from email link -->
+            <input type="hidden" name="token"
+                   value="<%= request.getParameter("token") != null
+                               ? request.getParameter("token") : "" %>" />
+            <div class="bi-form-group">
+                <label class="bi-label">New Password</label>
+                <input type="password" name="newPassword" class="bi-input"
+                       placeholder="Enter new password" required />
+            </div>
+            <div class="bi-form-group">
+                <label class="bi-label">Confirm Password</label>
+                <input type="password" name="confirmPassword" class="bi-input"
+                       placeholder="Confirm new password" required />
+            </div>
+            <button type="submit" class="bi-btn bi-btn--primary bi-btn--block bi-btn--large">
+                Reset Password
+            </button>
+        </form>
 
-    <form action="<%= request.getContextPath() %>/ResetPasswordServlet"
-          method="post">
+        <div class="bi-auth-card__footer">
+            <a href="<%= request.getContextPath() %>/login">Back to Login</a>
+        </div>
+    </div>
+</main>
 
-        <input type="password"
-               name="oldPassword"
-               placeholder="Old Password"
-               required>
-
-        <input type="password"
-               name="newPassword"
-               placeholder="New Password"
-               required>
-
-        <input type="password"
-               name="confirmPassword"
-               placeholder="Confirm Password"
-               required>
-
-        <button type="submit">Submit</button>
-
-    </form>
-
-</div>
-
+<jsp:include page="../footer.jsp" />
 </body>
 </html>
