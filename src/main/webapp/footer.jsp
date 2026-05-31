@@ -30,6 +30,6 @@
     </div>
 
     <div class="bi-footer__bottom">
-        <p>&copy; Bing It. All Rights Reserved.</p>
+        <p>&copy; Binge It. All Rights Reserved.</p>
     </div>
 </footer>
