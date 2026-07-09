@@ -33,31 +33,29 @@ public class SelectShowServlet extends HttpServlet {
         }
 
         MongoDatabase db = DBConnection.getDatabase();
-
-        // Get movieId from parameter (coming from Book Now button)
         String movieId = request.getParameter("movieId");
 
-        List<Document> shows = new ArrayList<>();
-        Document movie = null;
+        List<Document> shows    = new ArrayList<>();
         List<Document> theatres = new ArrayList<>();
+        List<Document> movies   = new ArrayList<>();
+        Document movie = null;
 
         try {
             MongoCollection<Document> moviesCol   = db.getCollection("movies");
             MongoCollection<Document> showsCol    = db.getCollection("shows");
             MongoCollection<Document> theatresCol = db.getCollection("theatres");
 
-            // Load all theatres
             theatres = theatresCol.find().into(new ArrayList<>());
 
             if (movieId != null && !movieId.isEmpty()) {
-                // Coming from Book Now — show shows for this specific movie
+                // Coming from Book Now — specific movie
                 ObjectId movieOid = new ObjectId(movieId);
                 movie = moviesCol.find(eq("_id", movieOid)).first();
                 shows = showsCol.find(eq("movie_id", movieOid)).into(new ArrayList<>());
             } else {
-                // Coming from navbar — show all movies first
-                List<Document> movies = moviesCol.find().into(new ArrayList<>());
-                request.setAttribute("movies", movies);
+                // Coming from navbar — load all shows + all movies for lookup
+                shows  = showsCol.find().into(new ArrayList<>());
+                movies = moviesCol.find().into(new ArrayList<>());
             }
 
         } catch (Exception e) {
@@ -67,6 +65,7 @@ public class SelectShowServlet extends HttpServlet {
         request.setAttribute("movie",    movie);
         request.setAttribute("shows",    shows);
         request.setAttribute("theatres", theatres);
+        request.setAttribute("movies",   movies);
         request.setAttribute("movieId",  movieId);
         request.setAttribute("currentPage", "bookings");
 

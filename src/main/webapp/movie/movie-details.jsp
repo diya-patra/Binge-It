@@ -287,7 +287,7 @@
 <section class="book-section">
 
     <a
-       href="<%= request.getContextPath() %>/select-show?movieId=<%= movieId %>"
+       href="<%= request.getContextPath() %>/bookings?movieId=<%= movieId %>"
 
        class="book-btn">
 

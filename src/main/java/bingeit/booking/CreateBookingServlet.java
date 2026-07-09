@@ -87,7 +87,7 @@ public class CreateBookingServlet extends HttpServlet {
                     .append("booked_seats",      bookedSeats)
                     .append("booking_date",      new Date())
                     .append("total_amount",      totalAmount)
-                    .append("status",            "Confirmed");
+                    .append("status",            "Pending");
 
             bookingsCol.insertOne(booking);
             savedBooking = booking;

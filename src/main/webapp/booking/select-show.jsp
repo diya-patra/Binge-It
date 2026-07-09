@@ -7,21 +7,24 @@
         return;
     }
 
-    Document movie      = (Document) request.getAttribute("movie");
-    List<Document> shows     = (List<Document>) request.getAttribute("shows");
-    List<Document> theatres  = (List<Document>) request.getAttribute("theatres");
-    List<Document> movies    = (List<Document>) request.getAttribute("movies");
-    String movieId      = (String) request.getAttribute("movieId");
+    Document movie         = (Document) request.getAttribute("movie");
+    List<Document> shows   = (List<Document>) request.getAttribute("shows");
+    List<Document> theatres= (List<Document>) request.getAttribute("theatres");
+    List<Document> movies  = (List<Document>) request.getAttribute("movies");
+    String movieId         = (String) request.getAttribute("movieId");
 
     String movieTitle = (movie != null && movie.getString("title") != null)
                         ? movie.getString("title") : "";
+
+    // Helper: get movie title by ObjectId from movies list
+    // Used when showing all shows (navbar mode)
 %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Select Show - BingeIt</title>
+    <title>Book Tickets - BingeIt</title>
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/global.css">
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/booking.css">
 </head>
@@ -33,67 +36,40 @@
         <div class="bi-hero__inner">
             <span class="bi-hero__badge">Book Tickets</span>
             <h1 class="bi-hero__title">
-                <%= movieTitle.isEmpty() ? "Select a Movie" : "Shows for " + movieTitle %>
+                <%= movieTitle.isEmpty() ? "Now Showing" : "Shows for " + movieTitle %>
             </h1>
-            <p class="bi-hero__subtitle">Choose your preferred show and theatre</p>
+            <p class="bi-hero__subtitle">
+                <%= movieTitle.isEmpty() ? "Select a show to book your seats" : "Choose your preferred show and theatre" %>
+            </p>
         </div>
     </div>
 
     <section class="bi-section">
         <div class="bi-container">
 
-            <%-- If no movie selected yet, show movie selection --%>
-            <% if (movieId == null || movieId.isEmpty()) { %>
-            <h2 class="bi-section__title" style="margin-bottom:1.5rem;">Select a Movie</h2>
-            <div class="bi-movie-grid">
-                <% if (movies != null) {
-                    for (Document m : movies) {
-                        String mId     = m.getObjectId("_id").toString();
-                        String mTitle  = m.getString("title") != null ? m.getString("title") : "Untitled";
-                        String mPoster = m.getString("poster_url") != null ? m.getString("poster_url") : "";
-                        String mGenre  = m.getString("genre") != null ? m.getString("genre") : "";
-                %>
-                <div class="bi-movie-card"
-                     onclick="window.location='<%= request.getContextPath() %>/bookings?movieId=<%= mId %>'">
-                    <img class="bi-movie-card__poster"
-                         src="<%= request.getContextPath() %>/<%= mPoster %>"
-                         alt="<%= mTitle %>">
-                    <div class="bi-movie-card__info">
-                        <div class="bi-movie-card__title"><%= mTitle %></div>
-                        <div class="bi-movie-card__meta"><%= mGenre %></div>
-                    </div>
-                </div>
-                <% } } %>
-            </div>
-
-            <%-- Movie selected — show shows grouped by theatre --%>
-            <% } else { %>
             <% if (shows == null || shows.isEmpty()) { %>
             <div class="bi-alert bi-alert--warning">
-                No shows available for this movie right now.
+                No shows available right now.
             </div>
             <a href="<%= request.getContextPath() %>/movies"
                class="bi-btn bi-btn--outline bi-mt-2">
-                Back to Movies
+                Browse Movies
             </a>
-            <% } else { %>
 
-            <%-- Group shows by theatre --%>
+            <% } else if (movieId != null && !movieId.isEmpty()) { %>
+            <%-- BOOK NOW MODE — shows for specific movie grouped by theatre --%>
             <% if (theatres != null) {
                 for (Document theatre : theatres) {
                     String theatreId   = theatre.getObjectId("_id").toString();
                     String theatreName = theatre.getString("name") != null ? theatre.getString("name") : "";
                     String theatreAddr = theatre.getString("address") != null ? theatre.getString("address") : "";
                     boolean hasShows   = false;
-
                     for (Document show : shows) {
                         if (show.getObjectId("theatre_id") != null &&
                             show.getObjectId("theatre_id").toString().equals(theatreId)) {
-                            hasShows = true;
-                            break;
+                            hasShows = true; break;
                         }
                     }
-
                     if (!hasShows) continue;
             %>
             <div class="booking-theatre-card">
@@ -105,29 +81,84 @@
                     <% for (Document show : shows) {
                         if (show.getObjectId("theatre_id") == null ||
                             !show.getObjectId("theatre_id").toString().equals(theatreId)) continue;
-
-                        String showId      = show.getObjectId("_id").toString();
-                        String showTime    = show.getString("show_time") != null ? show.getString("show_time") : "";
-                        String screenName  = show.getString("screen_name") != null ? show.getString("screen_name") : "";
-                        Object showDateObj = show.get("show_date");
-                        String showDate    = showDateObj != null ? showDateObj.toString().substring(0, 10) : "";
-
-                        Object priceObj    = show.get("price_silver");
-                        String priceFrom   = priceObj instanceof Number
-                                             ? "Rs. " + ((Number)priceObj).intValue()
-                                             : "Rs. 150";
+                        String showId     = show.getObjectId("_id").toString();
+                        String showTime   = show.getString("show_time") != null ? show.getString("show_time") : "";
+                        String screenName = show.getString("screen_name") != null ? show.getString("screen_name") : "";
+                        Object priceObj   = show.get("price_silver");
+                        String priceFrom  = priceObj instanceof Number
+                                            ? "Rs. " + ((Number)priceObj).intValue() : "Rs. 150";
                     %>
                     <div class="booking-show-slot"
                          onclick="window.location='<%= request.getContextPath() %>/seat-selection?showId=<%= showId %>'">
                         <div class="booking-show-time"><%= showTime %></div>
-                        <div class="booking-show-meta"><%= screenName %> &bull; <%= showDate %></div>
+                        <div class="booking-show-meta"><%= screenName %></div>
                         <div class="booking-show-price">from <%= priceFrom %></div>
                     </div>
                     <% } %>
                 </div>
             </div>
             <% } } %>
-            <% } %>
+
+            <% } else { %>
+            <%-- NAVBAR MODE — all shows grouped by movie --%>
+            <% if (movies != null) {
+                for (Document m : movies) {
+                    String mId    = m.getObjectId("_id").toString();
+                    String mTitle = m.getString("title") != null ? m.getString("title") : "Untitled";
+                    String mGenre = m.getString("genre") != null ? m.getString("genre") : "";
+                    String mPoster= m.getString("poster_url") != null ? m.getString("poster_url") : "";
+
+                    boolean hasShows = false;
+                    for (Document show : shows) {
+                        if (show.getObjectId("movie_id") != null &&
+                            show.getObjectId("movie_id").toString().equals(mId)) {
+                            hasShows = true; break;
+                        }
+                    }
+                    if (!hasShows) continue;
+            %>
+            <div class="booking-theatre-card">
+                <div class="booking-theatre-header" style="display:flex; gap:1rem; align-items:center;">
+                    <img src="<%= request.getContextPath() %>/<%= mPoster %>"
+                         style="width:60px; height:85px; object-fit:cover; border-radius:6px;">
+                    <div>
+                        <h3 class="booking-theatre-name"><%= mTitle %></h3>
+                        <p class="booking-theatre-address"><%= mGenre %></p>
+                    </div>
+                </div>
+                <div class="booking-shows-list" style="margin-top:1rem;">
+                    <% for (Document show : shows) {
+                        if (show.getObjectId("movie_id") == null ||
+                            !show.getObjectId("movie_id").toString().equals(mId)) continue;
+                        String showId     = show.getObjectId("_id").toString();
+                        String showTime   = show.getString("show_time") != null ? show.getString("show_time") : "";
+                        String screenName = show.getString("screen_name") != null ? show.getString("screen_name") : "";
+
+                        // Find theatre name
+                        String tName = "";
+                        if (show.getObjectId("theatre_id") != null && theatres != null) {
+                            for (Document t : theatres) {
+                                if (t.getObjectId("_id").toString().equals(
+                                        show.getObjectId("theatre_id").toString())) {
+                                    tName = t.getString("name") != null ? t.getString("name") : "";
+                                    break;
+                                }
+                            }
+                        }
+                        Object priceObj  = show.get("price_silver");
+                        String priceFrom = priceObj instanceof Number
+                                           ? "Rs. " + ((Number)priceObj).intValue() : "Rs. 150";
+                    %>
+                    <div class="booking-show-slot"
+                         onclick="window.location='<%= request.getContextPath() %>/seat-selection?showId=<%= showId %>'">
+                        <div class="booking-show-time"><%= showTime %></div>
+                        <div class="booking-show-meta"><%= tName %> &bull; <%= screenName %></div>
+                        <div class="booking-show-price">from <%= priceFrom %></div>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+            <% } } %>
             <% } %>
 
         </div>

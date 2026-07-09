@@ -76,8 +76,9 @@ public class SeatSelectionServlet extends HttpServlet {
             String screenName = show.getString("screen_name");
             allSeats = seatsCol.find(
                     and(eq("theatre_id", theatreOid),
-                        eq("screen_name", screenName))
-            ).into(new ArrayList<>());
+                        eq("screen_name", screenName)))
+                    .sort(new Document("seat_number", 1))
+                    .into(new ArrayList<>());
 
             // Get already booked seat IDs for this show
             List<Document> existingBookings = bookingsCol
