@@ -24,6 +24,11 @@
     	    ? movie.getString("banner_url")
     	    : posterUrl;
 
+    String trailerUrl =
+            (movie != null && movie.getString("trailer_url") != null)
+            ? movie.getString("trailer_url")
+            : "";
+    
     String genre =
         (movie != null && movie.getString("genre") != null)
         ? movie.getString("genre")
@@ -158,6 +163,20 @@
     <div class="movie-hero-bg"></div>
 
     <div class="movie-hero-overlay"></div>
+
+    <div class="movie-hero-content">
+
+        <h1 class="movie-hero-title"><%= title %></h1>
+
+        <% if (!trailerUrl.isEmpty()) { %>
+
+            <a href="<%= trailerUrl %>" target="_blank" class="trailer-btn">
+                &#9654; Trailer
+            </a>
+
+        <% } %>
+
+    </div>
 
 </section>
 
